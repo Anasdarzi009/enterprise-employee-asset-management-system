@@ -6,7 +6,7 @@ public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private String timestamp = LocalDateTime.now().toString();
 
     public ApiResponse() {}
 
@@ -14,6 +14,7 @@ public class ApiResponse<T> {
         this.success = success;
         this.message = message;
         this.data = data;
+        this.timestamp = LocalDateTime.now().toString();
     }
 
     public static <T> ApiResponse<T> ok(String message, T data) {
@@ -52,11 +53,11 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 }

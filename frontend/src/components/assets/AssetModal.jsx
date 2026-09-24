@@ -68,17 +68,17 @@ export const AssetModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={asset ? 'Edit Hardware Asset' : 'Register New Hardware Asset'}
-      maxWidth="650px"
+      title={asset ? 'Edit Asset' : 'Add Asset'}
+      maxWidth="560px"
     >
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div className="form-group">
-              <label className="form-label">Asset Tag / Identifier *</label>
+              <label className="form-label">Asset Tag *</label>
               <input
                 type="text"
-                placeholder="e.g. AST-LAP-005"
+                placeholder="AST-1005"
                 className="form-input"
                 value={formData.assetTag}
                 onChange={(e) => setFormData({ ...formData, assetTag: e.target.value.toUpperCase() })}
@@ -88,7 +88,7 @@ export const AssetModal = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Asset Type *</label>
+              <label className="form-label">Type *</label>
               <select
                 className="form-select"
                 value={formData.type}
@@ -107,10 +107,10 @@ export const AssetModal = ({
             </div>
 
             <div className="form-group" style={{ gridColumn: 'span 2' }}>
-              <label className="form-label">Asset Name / Model *</label>
+              <label className="form-label">Asset Name *</label>
               <input
                 type="text"
-                placeholder="e.g. Apple MacBook Pro 14-inch M3 Pro"
+                placeholder="e.g. Dell XPS 15"
                 className="form-input"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -119,10 +119,10 @@ export const AssetModal = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Hardware Serial Number *</label>
+              <label className="form-label">Serial Number *</label>
               <input
                 type="text"
-                placeholder="e.g. C02G4589MD6R"
+                placeholder="Serial number"
                 className="form-input"
                 value={formData.serialNumber}
                 onChange={(e) => setFormData({ ...formData, serialNumber: e.target.value })}
@@ -131,7 +131,7 @@ export const AssetModal = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Operational Status *</label>
+              <label className="form-label">Status *</label>
               <select
                 className="form-select"
                 value={formData.status}
@@ -139,7 +139,7 @@ export const AssetModal = ({
                 disabled={formData.status === 'ASSIGNED'}
               >
                 <option value="AVAILABLE">AVAILABLE</option>
-                <option value="ASSIGNED" disabled>ASSIGNED (Auto-set on assignment)</option>
+                <option value="ASSIGNED" disabled>ASSIGNED (Auto-set on assign)</option>
                 <option value="MAINTENANCE">MAINTENANCE</option>
                 <option value="RETIRED">RETIRED</option>
               </select>
@@ -157,11 +157,11 @@ export const AssetModal = ({
             </div>
 
             <div className="form-group" style={{ gridColumn: 'span 2' }}>
-              <label className="form-label">Specification & Notes</label>
+              <label className="form-label">Description</label>
               <textarea
                 className="form-textarea"
-                rows="3"
-                placeholder="e.g. 32GB RAM, 1TB SSD, Space Gray, with AppleCare+ warranty"
+                rows="2"
+                placeholder="Specifications or notes"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
@@ -174,7 +174,7 @@ export const AssetModal = ({
             Cancel
           </Button>
           <Button variant="primary" type="submit" loading={loading}>
-            {asset ? 'Save Changes' : 'Register Asset'}
+            Save
           </Button>
         </div>
       </form>

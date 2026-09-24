@@ -85,17 +85,17 @@ export const EmployeeModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={employee ? 'Edit Employee Details' : 'Add New Enterprise Employee'}
-      maxWidth="650px"
+      title={employee ? 'Edit Employee' : 'Add Employee'}
+      maxWidth="560px"
     >
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div className="form-group">
               <label className="form-label">Employee ID *</label>
               <input
                 type="text"
-                placeholder="e.g. EMP-1009"
+                placeholder="EMP-1009"
                 className="form-input"
                 value={formData.employeeId}
                 onChange={(e) => setFormData({ ...formData, employeeId: e.target.value.toUpperCase() })}
@@ -105,7 +105,7 @@ export const EmployeeModal = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Employment Status *</label>
+              <label className="form-label">Status *</label>
               <select
                 className="form-select"
                 value={formData.status}
@@ -121,7 +121,7 @@ export const EmployeeModal = ({
               <label className="form-label">First Name *</label>
               <input
                 type="text"
-                placeholder="Jane"
+                placeholder="First name"
                 className="form-input"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
@@ -133,7 +133,7 @@ export const EmployeeModal = ({
               <label className="form-label">Last Name *</label>
               <input
                 type="text"
-                placeholder="Doe"
+                placeholder="Last name"
                 className="form-input"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
@@ -142,10 +142,10 @@ export const EmployeeModal = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Corporate Email *</label>
+              <label className="form-label">Email *</label>
               <input
                 type="email"
-                placeholder="jane.doe@company.com"
+                placeholder="email@company.com"
                 className="form-input"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -154,10 +154,10 @@ export const EmployeeModal = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Phone Number</label>
+              <label className="form-label">Phone</label>
               <input
                 type="text"
-                placeholder="+1 (555) 000-0000"
+                placeholder="Phone number"
                 className="form-input"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -174,7 +174,7 @@ export const EmployeeModal = ({
                 <option value="">Select Department...</option>
                 {departments.map((dept) => (
                   <option key={dept.id} value={dept.id}>
-                    {dept.name} ({dept.code})
+                    {dept.name}
                   </option>
                 ))}
               </select>
@@ -182,10 +182,10 @@ export const EmployeeModal = ({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Designation / Role *</label>
+              <label className="form-label">Designation *</label>
               <input
                 type="text"
-                placeholder="e.g. Lead Software Architect"
+                placeholder="Designation"
                 className="form-input"
                 value={formData.designation}
                 onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
@@ -211,7 +211,7 @@ export const EmployeeModal = ({
             Cancel
           </Button>
           <Button variant="primary" type="submit" loading={loading}>
-            {employee ? 'Save Changes' : 'Create Employee'}
+            Save
           </Button>
         </div>
       </form>

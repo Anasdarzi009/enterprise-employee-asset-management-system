@@ -4,17 +4,14 @@ import { StatCard } from '../components/dashboard/StatCard';
 import { DepartmentDistributionChart } from '../components/dashboard/DepartmentDistributionChart';
 import { AssetStatusDistribution } from '../components/dashboard/AssetStatusDistribution';
 import { RecentAssignmentsTable } from '../components/dashboard/RecentAssignmentsTable';
-import { RecentEmployeesList } from '../components/dashboard/RecentEmployeesList';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { dashboardService } from '../services/dashboardService';
 import { useToast } from '../context/ToastContext';
-import { Users, UserCheck, Cpu, CheckCircle2, Layers, AlertTriangle } from 'lucide-react';
 
 export const Dashboard = () => {
   const { showToast } = useToast();
   const [stats, setStats] = useState(null);
   const [recentAssignments, setRecentAssignments] = useState([]);
-  const [recentEmployees, setRecentEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,17 +21,15 @@ export const Dashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const [statsData, assignmentsData, employeesData] = await Promise.all([
+      const [statsData, assignmentsData] = await Promise.all([
         dashboardService.getStats(),
         dashboardService.getRecentAssignments(),
-        dashboardService.getRecentEmployees(),
       ]);
 
       setStats(statsData);
       setRecentAssignments(assignmentsData);
-      setRecentEmployees(employeesData);
     } catch (err) {
-      showToast('Unable to load dashboard metrics: ' + err.message, 'error');
+      showToast('Unable to load dashboard data: ' + err.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -42,75 +37,30 @@ export const Dashboard = () => {
 
   return (
     <>
-      <Header title="Enterprise Operations Dashboard" />
+      <Header title="Dashboard" />
       <div className="content-body">
         {loading ? (
-          <LoadingSpinner text="Aggregating enterprise telemetry and asset statuses..." />
+          <LoadingSpinner text="Loading dashboard data..." />
         ) : (
           <>
-            {/* KPI Cards Row */}
-            <div className="stats-grid">
-              <StatCard
-                label="Total Employees"
-                value={stats?.totalEmployees}
-                icon={Users}
-                iconBg="#eff6ff"
-                iconColor="#2563eb"
-                trend="Total headcount registered"
-              />
-              <StatCard
-                label="Active Employees"
-                value={stats?.activeEmployees}
-                icon={UserCheck}
-                iconBg="#ecfdf5"
-                iconColor="#10b981"
-                trend="Onboarding & verified"
-              />
-              <StatCard
-                label="Total Assets"
-                value={stats?.totalAssets}
-                icon={Cpu}
-                iconBg="#f5f3ff"
-                iconColor="#8b5cf6"
-                trend="Hardware & peripherals"
-              />
-              <StatCard
-                label="Available Assets"
-                value={stats?.availableAssets}
-                icon={CheckCircle2}
-                iconBg="#ecfdf5"
-                iconColor="#059669"
-                trend="Ready for assignment"
-              />
-              <StatCard
-                label="Assigned Assets"
-                value={stats?.assignedAssets}
-                icon={Layers}
-                iconBg="#f0f9ff"
-                iconColor="#0284c7"
-                trend="Active employee deployments"
-              />
-              <StatCard
-                label="Under Maintenance"
-                value={stats?.maintenanceAssets}
-                icon={AlertTriangle}
-                iconBg="#fffbeb"
-                iconColor="#f59e0b"
-                trend="Repairs & servicing"
-              />
+            <div>
+              <h2 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#4b5563', textTransform: 'uppercase', marginBottom: '0.65rem' }}>
+                Overview
+              </h2>
+              <div className="stats-grid">
+                <StatCard label="Total Employees" value={stats?.totalEmployees} />
+                <StatCard label="Active Employees" value={stats?.activeEmployees} />
+                <StatCard label="Total Assets" value={stats?.totalAssets} />
+                <StatCard label="Available Assets" value={stats?.availableAssets} />
+              </div>
             </div>
 
-            {/* Distribution Charts Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
               <DepartmentDistributionChart distribution={stats?.departmentDistribution} />
               <AssetStatusDistribution distribution={stats?.assetStatusDistribution} />
             </div>
 
-            {/* Recent Activity Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem' }}>
-              <RecentAssignmentsTable assignments={recentAssignments} />
-              <RecentEmployeesList employees={recentEmployees} />
-            </div>
+            <RecentAssignmentsTable assignments={recentAssignments} />
           </>
         )}
       </div>

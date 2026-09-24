@@ -5,7 +5,6 @@ import { Badge } from '../components/common/Badge';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { userService } from '../services/userService';
 import { useToast } from '../context/ToastContext';
-import { ShieldCheck, UserCheck, ShieldAlert } from 'lucide-react';
 
 export const UsersRoles = () => {
   const { showToast } = useToast();
@@ -46,7 +45,7 @@ export const UsersRoles = () => {
     try {
       setUpdatingId(userId);
       await userService.toggleStatus(userId);
-      showToast('User active status toggled.', 'success');
+      showToast('User status updated.', 'success');
       loadUsers();
     } catch (err) {
       showToast(err.message, 'error');
@@ -57,34 +56,22 @@ export const UsersRoles = () => {
 
   return (
     <>
-      <Header title="Users & Role-Based Access Control" />
+      <Header title="Users & Roles" />
       <div className="content-body">
-        <div className="card" style={{ marginBottom: '1.5rem', backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }}>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <ShieldCheck size={24} color="#2563eb" />
-            <div>
-              <h4 style={{ fontWeight: 700, color: '#1e3a8a', fontSize: '0.95rem' }}>Enterprise RBAC Matrix</h4>
-              <p style={{ fontSize: '0.82rem', color: '#1e40af' }}>
-                ADMINs hold full system control including deletion; HR holds staff & asset assignment rights; EMPLOYEEs have profile & self-service access.
-              </p>
-            </div>
-          </div>
-        </div>
-
         {loading ? (
-          <LoadingSpinner text="Loading system credentials..." />
+          <LoadingSpinner text="Loading users..." />
         ) : (
           <div className="table-container">
             <table className="data-table">
               <thead>
                 <tr>
                   <th>User ID</th>
-                  <th>Full Name</th>
-                  <th>Corporate Email</th>
+                  <th>Name</th>
+                  <th>Email</th>
                   <th>Current Role</th>
-                  <th>Account Status</th>
-                  <th>Role Assignment</th>
-                  <th style={{ textAlign: 'right' }}>Status Toggle</th>
+                  <th>Status</th>
+                  <th>Change Role</th>
+                  <th style={{ textAlign: 'right' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,23 +80,20 @@ export const UsersRoles = () => {
                     <td>
                       <span className="code-badge">USR-{u.id}</span>
                     </td>
-                    <td style={{ fontWeight: 600, color: '#0f172a' }}>{u.fullName}</td>
-                    <td style={{ color: '#334155' }}>{u.email}</td>
+                    <td style={{ fontWeight: 600, color: '#111827' }}>{u.fullName}</td>
+                    <td>{u.email}</td>
                     <td>
                       <Badge status={u.role} label={u.role} />
                     </td>
                     <td>
-                      <span
-                        className={`badge ${u.active ? 'badge-success' : 'badge-danger'}`}
-                      >
-                        <span className="badge-dot" />
+                      <span className={`badge ${u.active ? 'badge-success' : 'badge-danger'}`}>
                         {u.active ? 'ACTIVE' : 'DISABLED'}
                       </span>
                     </td>
                     <td>
                       <select
                         className="form-select"
-                        style={{ width: 'auto', padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
+                        style={{ width: 'auto', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
                         value={u.role}
                         disabled={updatingId === u.id}
                         onChange={(e) => handleRoleChange(u.id, e.target.value)}
@@ -121,12 +105,12 @@ export const UsersRoles = () => {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <Button
-                        variant={u.active ? 'secondary' : 'primary'}
+                        variant="secondary"
                         size="sm"
                         disabled={updatingId === u.id}
                         onClick={() => handleToggleStatus(u.id)}
                       >
-                        {u.active ? 'Deactivate' : 'Activate'}
+                        {u.active ? 'Disable' : 'Enable'}
                       </Button>
                     </td>
                   </tr>

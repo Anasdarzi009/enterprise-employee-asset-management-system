@@ -3,70 +3,83 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
-  Cpu,
-  Layers,
+  HardDrive,
+  ClipboardList,
   ShieldCheck,
-  UserCircle,
+  User,
   LogOut,
-  Building2,
+  Building,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const Sidebar = () => {
   const { user, logout, isAdmin } = useAuth();
 
-  const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Employees', path: '/employees', icon: Users },
-    { name: 'Assets', path: '/assets', icon: Cpu },
-    { name: 'Assignments', path: '/assignments', icon: Layers },
-    { name: 'My Profile', path: '/profile', icon: UserCircle },
-  ];
-
-  if (isAdmin) {
-    navItems.push({ name: 'Users & Roles', path: '/users', icon: ShieldCheck });
-  }
-
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .substring(0, 2)
-      .toUpperCase();
-  };
-
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="brand-icon">
-          <Building2 size={20} />
-        </div>
-        <div className="brand-title">Enterprise Ops</div>
-        <span className="brand-badge">PRO</span>
+        <Building size={18} color="#94a3b8" />
+        <span className="brand-title">Enterprise Portal</span>
       </div>
 
       <nav className="sidebar-nav">
-        <div className="nav-section-label">Main Navigation</div>
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          return (
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <LayoutDashboard size={16} />
+          <span>Dashboard</span>
+        </NavLink>
+
+        <NavLink
+          to="/employees"
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <Users size={16} />
+          <span>Employees</span>
+        </NavLink>
+
+        <NavLink
+          to="/assets"
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <HardDrive size={16} />
+          <span>Assets</span>
+        </NavLink>
+
+        <NavLink
+          to="/assignments"
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <ClipboardList size={16} />
+          <span>Assignments</span>
+        </NavLink>
+
+        {isAdmin && (
+          <>
+            <div className="nav-section-label">Administration</div>
             <NavLink
-              key={item.path}
-              to={item.path}
+              to="/users"
               className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
             >
-              <Icon size={18} />
-              <span>{item.name}</span>
+              <ShieldCheck size={16} />
+              <span>Users & Roles</span>
             </NavLink>
-          );
-        })}
+          </>
+        )}
+
+        <div className="nav-section-label">My Account</div>
+        <NavLink
+          to="/profile"
+          className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+        >
+          <User size={16} />
+          <span>Profile</span>
+        </NavLink>
       </nav>
 
       <div className="sidebar-footer">
         <div className="user-mini-card">
-          <div className="user-avatar">{getInitials(user?.fullName)}</div>
           <div className="user-info">
             <span className="user-name">{user?.fullName || 'User'}</span>
             <span className="user-role-tag">{user?.role || 'Guest'}</span>
@@ -76,20 +89,10 @@ export const Sidebar = () => {
         <button
           onClick={logout}
           className="btn btn-secondary btn-sm"
-          style={{
-            width: '100%',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            borderColor: 'rgba(255, 255, 255, 0.1)',
-            color: '#f87171',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem',
-          }}
+          style={{ width: '100%', justifyContent: 'center' }}
         >
-          <LogOut size={15} />
-          <span>Sign Out</span>
+          <LogOut size={14} />
+          <span>Logout</span>
         </button>
       </div>
     </aside>

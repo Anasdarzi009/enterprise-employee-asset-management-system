@@ -13,7 +13,7 @@ import { EmployeeFilter } from '../components/employees/EmployeeFilter';
 import { employeeService } from '../services/employeeService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { UserPlus, Eye, Edit2, Trash2, Users } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export const Employees = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export const Employees = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -120,20 +120,18 @@ export const Employees = () => {
     }
   };
 
-  // Paginated records
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedEmployees = employees.slice(startIndex, startIndex + pageSize);
 
   return (
     <>
-      <Header title="Employee Directory" />
+      <Header title="Employees" />
       <div className="content-body">
-        {/* Actions & Filters Bar */}
         <div className="filter-bar">
           <SearchBar
             value={search}
             onChange={setSearch}
-            placeholder="Search by name, employee ID, email or role..."
+            placeholder="Search employees..."
           />
           <EmployeeFilter
             departmentId={selectedDept}
@@ -148,21 +146,19 @@ export const Employees = () => {
             }}
           />
           {canManage && (
-            <Button variant="primary" icon={UserPlus} onClick={handleOpenAdd}>
+            <Button variant="primary" icon={Plus} onClick={handleOpenAdd}>
               Add Employee
             </Button>
           )}
         </div>
 
-        {/* Table Content */}
         {loading ? (
-          <LoadingSpinner text="Retrieving employee directory..." />
+          <LoadingSpinner text="Loading employees..." />
         ) : employees.length === 0 ? (
           <EmptyState
-            icon={Users}
             title="No employees found"
-            description={search || selectedDept || selectedStatus ? 'No employee matches your active filters.' : 'No employees are registered in the enterprise directory.'}
-            actionText={canManage ? 'Add New Employee' : undefined}
+            description="No employee records match the selected filter."
+            actionText={canManage ? 'Add Employee' : undefined}
             onAction={canManage ? handleOpenAdd : undefined}
           />
         ) : (
@@ -171,14 +167,12 @@ export const Employees = () => {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Emp ID</th>
-                    <th>Full Name</th>
-                    <th>Email & Phone</th>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
                     <th>Department</th>
                     <th>Designation</th>
-                    <th>Joined</th>
                     <th>Status</th>
-                    <th>Assets</th>
                     <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
@@ -188,67 +182,37 @@ export const Employees = () => {
                       <td>
                         <span className="code-badge">{emp.employeeId}</span>
                       </td>
-                      <td>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>
-                          {emp.firstName} {emp.lastName}
-                        </div>
+                      <td style={{ fontWeight: 600, color: '#111827' }}>
+                        {emp.firstName} {emp.lastName}
                       </td>
-                      <td>
-                        <div style={{ color: '#334155', fontSize: '0.84rem' }}>{emp.email}</div>
-                        {emp.phone && (
-                          <div style={{ color: '#94a3b8', fontSize: '0.75rem' }}>{emp.phone}</div>
-                        )}
-                      </td>
-                      <td>
-                        <span style={{ fontWeight: 500 }}>{emp.departmentName}</span>
-                      </td>
+                      <td>{emp.email}</td>
+                      <td>{emp.departmentName}</td>
                       <td>{emp.designation}</td>
-                      <td style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
-                        {emp.joiningDate}
-                      </td>
                       <td>
                         <Badge status={emp.status} />
                       </td>
-                      <td>
-                        <span
-                          style={{
-                            fontWeight: 700,
-                            padding: '2px 8px',
-                            borderRadius: '12px',
-                            backgroundColor: emp.assignedAssetsCount > 0 ? '#eff6ff' : '#f1f5f9',
-                            color: emp.assignedAssetsCount > 0 ? '#2563eb' : '#64748b',
-                            fontSize: '0.78rem',
-                          }}
-                        >
-                          {emp.assignedAssetsCount} items
-                        </span>
-                      </td>
                       <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
                           <button
-                            title="View Employee Profile"
-                            className="btn-icon"
+                            className="btn btn-secondary btn-sm"
                             onClick={() => navigate(`/employees/${emp.id}`)}
                           >
-                            <Eye size={16} />
+                            View
                           </button>
                           {canManage && (
                             <button
-                              title="Edit Employee"
-                              className="btn-icon"
+                              className="btn btn-secondary btn-sm"
                               onClick={() => handleOpenEdit(emp)}
                             >
-                              <Edit2 size={16} />
+                              Edit
                             </button>
                           )}
                           {isAdmin && (
                             <button
-                              title="Delete Employee"
-                              className="btn-icon"
-                              style={{ color: '#ef4444' }}
+                              className="btn btn-danger btn-sm"
                               onClick={() => setDeleteTarget(emp)}
                             >
-                              <Trash2 size={16} />
+                              Delete
                             </button>
                           )}
                         </div>
@@ -269,7 +233,6 @@ export const Employees = () => {
         )}
       </div>
 
-      {/* Employee Add/Edit Modal */}
       <EmployeeModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -279,13 +242,12 @@ export const Employees = () => {
         loading={isSubmitting}
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}
-        title="Delete Employee Record"
-        message={`Are you sure you want to remove ${deleteTarget?.firstName} ${deleteTarget?.lastName} (${deleteTarget?.employeeId})? This action cannot be reversed.`}
+        title="Delete Employee"
+        message={`Are you sure you want to delete ${deleteTarget?.firstName} ${deleteTarget?.lastName} (${deleteTarget?.employeeId})?`}
         loading={isDeleting}
       />
     </>

@@ -11,18 +11,7 @@ import { assetService } from '../services/assetService';
 import { assignmentService } from '../services/assignmentService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import {
-  ArrowLeft,
-  Mail,
-  Phone,
-  Building,
-  Calendar,
-  Briefcase,
-  Layers,
-  PlusCircle,
-  RotateCcw,
-  Cpu,
-} from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 
 export const EmployeeDetails = () => {
   const { id } = useParams();
@@ -97,107 +86,82 @@ export const EmployeeDetails = () => {
 
   return (
     <>
-      <Header title="Employee Dossier & Assets" />
+      <Header title="Employee Details" />
       <div className="content-body">
-        <div style={{ marginBottom: '0.5rem' }}>
+        <div>
           <Button variant="secondary" size="sm" icon={ArrowLeft} onClick={() => navigate('/employees')}>
-            Back to Directory
+            Back to Employees
           </Button>
         </div>
 
         {loading ? (
-          <LoadingSpinner text="Retrieving employee profile and asset allocations..." />
+          <LoadingSpinner text="Loading employee profile..." />
         ) : !employee ? (
           <div className="card">Employee record not found.</div>
         ) : (
           <>
-            {/* Employee Dossier Header Card */}
-            <div className="card" style={{ padding: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem' }}>
-                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                  <div
-                    style={{
-                      width: '72px',
-                      height: '72px',
-                      borderRadius: '16px',
-                      background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                      color: '#ffffff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.75rem',
-                      fontWeight: 800,
-                      boxShadow: '0 8px 16px rgba(37, 99, 235, 0.25)',
-                    }}
-                  >
-                    {employee.firstName?.[0]}{employee.lastName?.[0]}
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                      <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-                        {employee.firstName} {employee.lastName}
-                      </h2>
-                      <Badge status={employee.status} />
-                    </div>
-                    <div style={{ color: '#475569', fontWeight: 600, marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span>{employee.designation}</span>
-                      <span>&bull;</span>
-                      <span className="code-badge">{employee.employeeId}</span>
-                    </div>
-                  </div>
+            {/* Employee Information Card */}
+            <div className="card">
+              <div className="card-header">
+                <div>
+                  <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#111827' }}>
+                    {employee.firstName} {employee.lastName}
+                  </h2>
+                  <span className="code-badge" style={{ marginTop: '4px', display: 'inline-block' }}>
+                    {employee.employeeId}
+                  </span>
                 </div>
-
-                {canManage && (
-                  <Button
-                    variant="primary"
-                    icon={PlusCircle}
-                    onClick={() => setIsAssignModalOpen(true)}
-                    disabled={employee.status !== 'ACTIVE'}
-                  >
-                    Assign New Asset
-                  </Button>
-                )}
+                <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
+                  <Badge status={employee.status} />
+                  {canManage && (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      icon={Plus}
+                      onClick={() => setIsAssignModalOpen(true)}
+                      disabled={employee.status !== 'ACTIVE'}
+                    >
+                      Assign Asset
+                    </Button>
+                  )}
+                </div>
               </div>
 
-              {/* Dossier Grid Details */}
               <div
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                  gap: '1.25rem',
-                  marginTop: '1.75rem',
-                  paddingTop: '1.5rem',
-                  borderTop: '1px solid #f1f5f9',
+                  gap: '1rem',
+                  paddingTop: '0.75rem',
+                  borderTop: '1px solid #e5e7eb',
+                  fontSize: '0.85rem',
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <Mail size={14} /> Corporate Email
-                  </div>
-                  <div style={{ fontWeight: 600, color: '#0f172a', marginTop: '0.25rem' }}>{employee.email}</div>
+                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>Email</div>
+                  <div style={{ fontWeight: 600 }}>{employee.email}</div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <Phone size={14} /> Contact Phone
-                  </div>
-                  <div style={{ fontWeight: 600, color: '#0f172a', marginTop: '0.25rem' }}>{employee.phone || 'N/A'}</div>
+                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>Phone</div>
+                  <div style={{ fontWeight: 600 }}>{employee.phone || '—'}</div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <Building size={14} /> Department
-                  </div>
-                  <div style={{ fontWeight: 600, color: '#0f172a', marginTop: '0.25rem' }}>
+                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>Department</div>
+                  <div style={{ fontWeight: 600 }}>
                     {employee.departmentName} ({employee.departmentCode})
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <Calendar size={14} /> Joining Date
-                  </div>
-                  <div style={{ fontWeight: 600, color: '#0f172a', marginTop: '0.25rem' }}>{employee.joiningDate}</div>
+                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>Designation</div>
+                  <div style={{ fontWeight: 600 }}>{employee.designation}</div>
+                </div>
+
+                <div>
+                  <div style={{ color: '#6b7280', fontSize: '0.75rem' }}>Joining Date</div>
+                  <div style={{ fontWeight: 600 }}>{employee.joiningDate}</div>
                 </div>
               </div>
             </div>
@@ -205,20 +169,16 @@ export const EmployeeDetails = () => {
             {/* Currently Assigned Assets Card */}
             <div className="card">
               <div className="card-header">
-                <div>
-                  <h3 className="card-title">Currently Assigned Hardware Equipment</h3>
-                  <p className="card-subtitle">Active company assets checked out by this employee</p>
-                </div>
-                <span className="code-badge">{assignedAssets.length} Active Items</span>
+                <h3 className="card-title">Assigned Assets</h3>
+                <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>{assignedAssets.length} items</span>
               </div>
 
               {assignedAssets.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2.5rem', color: '#94a3b8' }}>
-                  <Cpu size={32} style={{ margin: '0 auto 0.5rem auto', opacity: 0.5 }} />
-                  <div>No hardware assets currently assigned to this employee.</div>
+                <div style={{ color: '#6b7280', fontSize: '0.85rem', padding: '1rem 0' }}>
+                  No assets currently assigned to this employee.
                 </div>
               ) : (
-                <div className="table-container" style={{ border: 'none', boxShadow: 'none' }}>
+                <div className="table-container" style={{ border: 'none' }}>
                   <table className="data-table">
                     <thead>
                       <tr>
@@ -226,14 +186,12 @@ export const EmployeeDetails = () => {
                         <th>Asset Name</th>
                         <th>Type</th>
                         <th>Serial Number</th>
-                        <th>Purchase Date</th>
                         <th>Status</th>
-                        {canManage && <th style={{ textAlign: 'right' }}>Actions</th>}
+                        {canManage && <th style={{ textAlign: 'right' }}>Action</th>}
                       </tr>
                     </thead>
                     <tbody>
                       {assignedAssets.map((asset) => {
-                        // Find matching active assignment
                         const activeAssignment = assignmentHistory.find(
                           (h) => h.assetId === asset.id && h.status === 'ACTIVE'
                         );
@@ -243,12 +201,9 @@ export const EmployeeDetails = () => {
                             <td>
                               <span className="code-badge">{asset.assetTag}</span>
                             </td>
-                            <td style={{ fontWeight: 600, color: '#0f172a' }}>{asset.name}</td>
-                            <td>
-                              <Badge type={asset.type} />
-                            </td>
-                            <td style={{ fontFamily: 'monospace' }}>{asset.serialNumber}</td>
-                            <td>{asset.purchaseDate}</td>
+                            <td style={{ fontWeight: 600, color: '#111827' }}>{asset.name}</td>
+                            <td>{asset.type}</td>
+                            <td>{asset.serialNumber}</td>
                             <td>
                               <Badge status={asset.status} />
                             </td>
@@ -257,10 +212,9 @@ export const EmployeeDetails = () => {
                                 <Button
                                   variant="secondary"
                                   size="sm"
-                                  icon={RotateCcw}
                                   onClick={() => setReturnTarget(activeAssignment)}
                                 >
-                                  Return Asset
+                                  Return
                                 </Button>
                               </td>
                             )}
@@ -273,52 +227,43 @@ export const EmployeeDetails = () => {
               )}
             </div>
 
-            {/* Complete Assignment Lifecycle History */}
+            {/* Assignment History */}
             <div className="card">
               <div className="card-header">
-                <div>
-                  <h3 className="card-title">Asset Assignment Audit Trail</h3>
-                  <p className="card-subtitle">Complete historical equipment issuance & return records</p>
-                </div>
+                <h3 className="card-title">Assignment History</h3>
               </div>
 
-              <div className="table-container" style={{ border: 'none', boxShadow: 'none' }}>
+              <div className="table-container" style={{ border: 'none' }}>
                 <table className="data-table">
                   <thead>
                     <tr>
-                      <th>Ref ID</th>
                       <th>Asset</th>
                       <th>Assigned Date</th>
                       <th>Returned Date</th>
-                      <th>Lifecycle Status</th>
-                      <th>Notes & Remarks</th>
+                      <th>Status</th>
+                      <th>Notes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {assignmentHistory.length === 0 ? (
                       <tr>
-                        <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                          No historical assignment logs
+                        <td colSpan="5" style={{ color: '#6b7280', textAlign: 'center' }}>
+                          No assignment records
                         </td>
                       </tr>
                     ) : (
                       assignmentHistory.map((item) => (
                         <tr key={item.id}>
                           <td>
-                            <span className="code-badge">ASG-{item.id}</span>
-                          </td>
-                          <td>
-                            <div style={{ fontWeight: 600, color: '#0f172a' }}>{item.assetName}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{item.assetTag}</div>
+                            <span style={{ fontWeight: 600 }}>{item.assetName}</span>
+                            <span className="code-badge" style={{ marginLeft: '6px' }}>{item.assetTag}</span>
                           </td>
                           <td>{item.assignedDate}</td>
                           <td>{item.returnedDate || '—'}</td>
                           <td>
                             <Badge status={item.status} />
                           </td>
-                          <td style={{ fontSize: '0.82rem', color: '#475569', maxWidth: '300px' }}>
-                            {item.notes || '—'}
-                          </td>
+                          <td style={{ color: '#4b5563' }}>{item.notes || '—'}</td>
                         </tr>
                       ))
                     )}
@@ -330,7 +275,6 @@ export const EmployeeDetails = () => {
         )}
       </div>
 
-      {/* Assign Modal */}
       <AssignAssetModal
         isOpen={isAssignModalOpen}
         onClose={() => setIsAssignModalOpen(false)}
@@ -341,7 +285,6 @@ export const EmployeeDetails = () => {
         loading={submitting}
       />
 
-      {/* Return Modal */}
       <ReturnAssetModal
         isOpen={Boolean(returnTarget)}
         onClose={() => setReturnTarget(null)}

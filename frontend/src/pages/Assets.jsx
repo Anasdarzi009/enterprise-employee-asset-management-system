@@ -16,7 +16,7 @@ import { employeeService } from '../services/employeeService';
 import { assignmentService } from '../services/assignmentService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { Plus, Edit2, Trash2, Layers, Cpu, Eye, User } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Assets = () => {
@@ -34,17 +34,17 @@ export const Assets = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   // Modals
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Quick Assign Modal
+  // Assign Modal
   const [assigningAsset, setAssigningAsset] = useState(null);
 
-  // Details Modal
+  // View Details Modal
   const [viewingAsset, setViewingAsset] = useState(null);
 
   // Delete Confirm
@@ -53,12 +53,9 @@ export const Assets = () => {
 
   useEffect(() => {
     loadAssets();
-    if (canManage) {
-      loadEmployees();
-    }
   }, [search, selectedType, selectedStatus]);
 
-  const loadEmployees = async () => {
+  const loadEmployeesForAssign = async () => {
     try {
       const data = await employeeService.getAll({ status: 'ACTIVE' });
       setEmployees(data);
@@ -91,6 +88,11 @@ export const Assets = () => {
   const handleOpenEdit = (ast) => {
     setEditingAsset(ast);
     setIsAssetModalOpen(true);
+  };
+
+  const handleOpenAssign = (ast) => {
+    setAssigningAsset(ast);
+    loadEmployeesForAssign();
   };
 
   const handleFormSubmit = async (formData) => {
@@ -146,14 +148,13 @@ export const Assets = () => {
 
   return (
     <>
-      <Header title="Hardware & Asset Inventory" />
+      <Header title="Assets" />
       <div className="content-body">
-        {/* Filters and Actions */}
         <div className="filter-bar">
           <SearchBar
             value={search}
             onChange={setSearch}
-            placeholder="Search by asset tag, model name or serial number..."
+            placeholder="Search assets..."
           />
           <AssetFilter
             type={selectedType}
@@ -173,15 +174,13 @@ export const Assets = () => {
           )}
         </div>
 
-        {/* Assets Table */}
         {loading ? (
-          <LoadingSpinner text="Loading hardware assets..." />
+          <LoadingSpinner text="Loading assets..." />
         ) : assets.length === 0 ? (
           <EmptyState
-            icon={Cpu}
             title="No assets found"
-            description={search || selectedType || selectedStatus ? 'No asset matches your filter criteria.' : 'No assets registered in inventory.'}
-            actionText={canManage ? 'Add New Asset' : undefined}
+            description="No asset records match the specified query."
+            actionText={canManage ? 'Add Asset' : undefined}
             onAction={canManage ? handleOpenAdd : undefined}
           />
         ) : (
@@ -191,10 +190,9 @@ export const Assets = () => {
                 <thead>
                   <tr>
                     <th>Asset Tag</th>
-                    <th>Asset Model / Name</th>
+                    <th>Asset</th>
                     <th>Type</th>
                     <th>Serial Number</th>
-                    <th>Purchase Date</th>
                     <th>Status</th>
                     <th>Assigned To</th>
                     <th style={{ textAlign: 'right' }}>Actions</th>
@@ -206,77 +204,55 @@ export const Assets = () => {
                       <td>
                         <span className="code-badge">{ast.assetTag}</span>
                       </td>
-                      <td>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{ast.name}</div>
-                      </td>
-                      <td>
-                        <Badge type={ast.type} />
-                      </td>
-                      <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{ast.serialNumber}</td>
-                      <td style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>{ast.purchaseDate}</td>
+                      <td style={{ fontWeight: 600, color: '#111827' }}>{ast.name}</td>
+                      <td>{ast.type}</td>
+                      <td>{ast.serialNumber}</td>
                       <td>
                         <Badge status={ast.status} />
                       </td>
                       <td>
                         {ast.currentEmployeeName ? (
-                          <Link
-                            to={`/employees/${ast.currentEmployeeId}`}
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.35rem',
-                              color: '#2563eb',
-                              fontWeight: 600,
-                              fontSize: '0.84rem',
-                            }}
-                          >
-                            <User size={14} />
+                          <Link to={`/employees/${ast.currentEmployeeId}`}>
                             {ast.currentEmployeeName}
                           </Link>
                         ) : (
-                          <span style={{ color: '#94a3b8', fontSize: '0.82rem' }}>— Unassigned —</span>
+                          <span style={{ color: '#9ca3af' }}>Unassigned</span>
                         )}
                       </td>
                       <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.4rem' }}>
                           <button
-                            title="View Asset Details"
-                            className="btn-icon"
+                            className="btn btn-secondary btn-sm"
                             onClick={() => setViewingAsset(ast)}
                           >
-                            <Eye size={16} />
+                            View
                           </button>
 
                           {canManage && ast.status === 'AVAILABLE' && (
                             <button
-                              title="Assign to Employee"
-                              className="btn-icon"
-                              style={{ color: '#2563eb' }}
-                              onClick={() => setAssigningAsset(ast)}
+                              className="btn btn-primary btn-sm"
+                              onClick={() => handleOpenAssign(ast)}
                             >
-                              <Layers size={16} />
+                              Assign
                             </button>
                           )}
 
                           {canManage && (
                             <button
-                              title="Edit Asset"
-                              className="btn-icon"
+                              className="btn btn-secondary btn-sm"
                               onClick={() => handleOpenEdit(ast)}
                             >
-                              <Edit2 size={16} />
+                              Edit
                             </button>
                           )}
 
                           {isAdmin && (
                             <button
-                              title="Delete Asset"
-                              className="btn-icon"
-                              style={{ color: '#ef4444' }}
+                              className="btn btn-danger btn-sm"
                               onClick={() => setDeleteTarget(ast)}
                               disabled={ast.status === 'ASSIGNED'}
                             >
-                              <Trash2 size={16} />
+                              Delete
                             </button>
                           )}
                         </div>
@@ -297,7 +273,6 @@ export const Assets = () => {
         )}
       </div>
 
-      {/* Asset Add/Edit Modal */}
       <AssetModal
         isOpen={isAssetModalOpen}
         onClose={() => setIsAssetModalOpen(false)}
@@ -306,7 +281,6 @@ export const Assets = () => {
         loading={isSubmitting}
       />
 
-      {/* Quick Assign Modal */}
       <AssignAssetModal
         isOpen={Boolean(assigningAsset)}
         onClose={() => setAssigningAsset(null)}
@@ -317,58 +291,47 @@ export const Assets = () => {
         loading={isSubmitting}
       />
 
-      {/* View Asset Details Modal */}
       <Modal
         isOpen={Boolean(viewingAsset)}
         onClose={() => setViewingAsset(null)}
-        title="Asset Specification Dossier"
-        maxWidth="500px"
+        title="Asset Details"
+        maxWidth="480px"
       >
-        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>ASSET IDENTIFIER</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>{viewingAsset?.name}</div>
-            <div className="code-badge" style={{ display: 'inline-block', marginTop: '4px' }}>
-              {viewingAsset?.assetTag}
+            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Asset Tag</div>
+            <div style={{ fontWeight: 600 }}>{viewingAsset?.assetTag}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Name</div>
+            <div style={{ fontWeight: 600 }}>{viewingAsset?.name}</div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Type</div>
+              <div>{viewingAsset?.type}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Status</div>
+              <div style={{ marginTop: '2px' }}><Badge status={viewingAsset?.status} /></div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Serial Number</div>
+              <div>{viewingAsset?.serialNumber}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Purchase Date</div>
+              <div>{viewingAsset?.purchaseDate}</div>
             </div>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', paddingTop: '0.5rem', borderTop: '1px solid #f1f5f9' }}>
-            <div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Hardware Type</div>
-              <div style={{ marginTop: '3px' }}><Badge type={viewingAsset?.type} /></div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Operational Status</div>
-              <div style={{ marginTop: '3px' }}><Badge status={viewingAsset?.status} /></div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Serial Number</div>
-              <div style={{ fontWeight: 600, fontFamily: 'monospace' }}>{viewingAsset?.serialNumber}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Purchase Date</div>
-              <div style={{ fontWeight: 600 }}>{viewingAsset?.purchaseDate}</div>
-            </div>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Assigned To</div>
+            <div>{viewingAsset?.currentEmployeeName || 'Unassigned'}</div>
           </div>
-
-          <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #f1f5f9' }}>
-            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Current Assignment</div>
-            <div style={{ fontWeight: 600, marginTop: '2px' }}>
-              {viewingAsset?.currentEmployeeName ? (
-                <span>{viewingAsset.currentEmployeeName} ({viewingAsset.currentEmployeeCode})</span>
-              ) : (
-                <span style={{ color: '#94a3b8' }}>Unassigned (In IT Warehouse)</span>
-              )}
-            </div>
-          </div>
-
           {viewingAsset?.description && (
-            <div style={{ paddingTop: '0.5rem', borderTop: '1px solid #f1f5f9' }}>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Hardware Specifications</div>
-              <div style={{ fontSize: '0.85rem', color: '#334155', marginTop: '3px', lineHeight: 1.5 }}>
-                {viewingAsset.description}
-              </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Description</div>
+              <div style={{ fontSize: '0.85rem', color: '#374151' }}>{viewingAsset.description}</div>
             </div>
           )}
         </div>
@@ -379,12 +342,11 @@ export const Assets = () => {
         </div>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}
-        title="Delete Hardware Asset"
+        title="Delete Asset"
         message={`Are you sure you want to delete ${deleteTarget?.name} (${deleteTarget?.assetTag})?`}
         loading={isDeleting}
       />

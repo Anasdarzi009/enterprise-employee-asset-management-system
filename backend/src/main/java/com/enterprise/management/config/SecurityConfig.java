@@ -71,6 +71,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Role-based authorization:
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/employees/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/assets/**").hasRole("ADMIN")
@@ -78,7 +79,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/employees/**").hasAnyRole("ADMIN", "HR")
                 .requestMatchers(HttpMethod.POST, "/api/assets/**").hasAnyRole("ADMIN", "HR")
                 .requestMatchers(HttpMethod.PUT, "/api/assets/**").hasAnyRole("ADMIN", "HR")
-                .requestMatchers("/api/assignments/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers(HttpMethod.POST, "/api/assignments/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers(HttpMethod.PUT, "/api/assignments/**").hasAnyRole("ADMIN", "HR")
+                .requestMatchers(HttpMethod.GET, "/api/assignments/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/employees/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/assets/**").authenticated()
                 .requestMatchers("/api/dashboard/**").authenticated()

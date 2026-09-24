@@ -29,30 +29,24 @@ export const ReturnAssetModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Return Hardware Asset"
-      maxWidth="500px"
+      title="Return Asset"
+      maxWidth="460px"
     >
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
           <div
             style={{
-              padding: '0.85rem',
-              backgroundColor: '#f8fafc',
-              borderRadius: '8px',
-              border: '1px solid #e2e8f0',
-              marginBottom: '1.25rem',
-              fontSize: '0.85rem',
+              padding: '0.65rem 0.85rem',
+              backgroundColor: '#f9fafb',
+              borderRadius: '4px',
+              border: '1px solid #e5e7eb',
+              marginBottom: '1rem',
+              fontSize: '0.82rem',
             }}
           >
-            <div>
-              <strong>Asset:</strong> {assignment?.assetName} ({assignment?.assetTag})
-            </div>
-            <div style={{ marginTop: '0.25rem' }}>
-              <strong>Currently with:</strong> {assignment?.employeeName} ({assignment?.employeeCode})
-            </div>
-            <div style={{ marginTop: '0.25rem' }}>
-              <strong>Assigned on:</strong> {assignment?.assignedDate}
-            </div>
+            <div><strong>Asset:</strong> {assignment?.assetName} ({assignment?.assetTag})</div>
+            <div style={{ marginTop: '0.2rem' }}><strong>Employee:</strong> {assignment?.employeeName}</div>
+            <div style={{ marginTop: '0.2rem' }}><strong>Assigned Date:</strong> {assignment?.assignedDate}</div>
           </div>
 
           <div className="form-group">
@@ -67,11 +61,11 @@ export const ReturnAssetModal = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">Inspection & Condition Notes</label>
+            <label className="form-label">Notes</label>
             <textarea
               className="form-textarea"
-              rows="3"
-              placeholder="e.g. Asset returned in good operational condition with all original accessories."
+              rows="2"
+              placeholder="Return condition or remarks"
               value={returnNotes}
               onChange={(e) => setReturnNotes(e.target.value)}
             />

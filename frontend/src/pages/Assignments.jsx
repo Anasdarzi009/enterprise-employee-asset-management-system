@@ -13,7 +13,7 @@ import { assetService } from '../services/assetService';
 import { employeeService } from '../services/employeeService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { Plus, RotateCcw, Layers } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const Assignments = () => {
@@ -31,7 +31,7 @@ export const Assignments = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  const pageSize = 10;
 
   // Modals
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -40,9 +40,6 @@ export const Assignments = () => {
 
   useEffect(() => {
     loadAssignments();
-    if (canManage) {
-      loadFormData();
-    }
   }, []);
 
   const loadAssignments = async () => {
@@ -70,6 +67,11 @@ export const Assignments = () => {
     }
   };
 
+  const handleOpenAssignModal = () => {
+    loadFormData();
+    setIsAssignModalOpen(true);
+  };
+
   const handleAssignSubmit = async (formData) => {
     try {
       setSubmitting(true);
@@ -77,7 +79,6 @@ export const Assignments = () => {
       showToast('Asset assigned successfully.', 'success');
       setIsAssignModalOpen(false);
       loadAssignments();
-      loadFormData();
     } catch (err) {
       showToast(err.message, 'error');
     } finally {
@@ -93,7 +94,6 @@ export const Assignments = () => {
       showToast('Asset returned successfully.', 'success');
       setReturnTarget(null);
       loadAssignments();
-      loadFormData();
     } catch (err) {
       showToast(err.message, 'error');
     } finally {
@@ -120,25 +120,24 @@ export const Assignments = () => {
 
   return (
     <>
-      <Header title="Asset Assignment & Audit History" />
+      <Header title="Assignments" />
       <div className="content-body">
-        {/* Filters and Controls */}
         <div className="filter-bar">
           <SearchBar
             value={search}
             onChange={setSearch}
-            placeholder="Search by asset, tag, or employee..."
+            placeholder="Search assignments..."
           />
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <select
               className="form-select"
-              style={{ width: 'auto', minWidth: '160px' }}
+              style={{ width: 'auto' }}
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="">All Statuses</option>
-              <option value="ACTIVE">ACTIVE</option>
-              <option value="RETURNED">RETURNED</option>
+              <option value="ACTIVE">Active</option>
+              <option value="RETURNED">Returned</option>
             </select>
 
             {statusFilter && (
@@ -153,22 +152,20 @@ export const Assignments = () => {
           </div>
 
           {canManage && (
-            <Button variant="primary" icon={Plus} onClick={() => setIsAssignModalOpen(true)}>
-              New Assignment
+            <Button variant="primary" icon={Plus} onClick={handleOpenAssignModal}>
+              Assign Asset
             </Button>
           )}
         </div>
 
-        {/* History Table */}
         {loading ? (
-          <LoadingSpinner text="Retrieving assignment logs..." />
+          <LoadingSpinner text="Loading assignments..." />
         ) : filteredAssignments.length === 0 ? (
           <EmptyState
-            icon={Layers}
-            title="No assignment records found"
-            description="No hardware assignments match the specified query."
+            title="No assignments found"
+            description="No assignments match the specified query."
             actionText={canManage ? 'Assign Asset' : undefined}
-            onAction={canManage ? () => setIsAssignModalOpen(true) : undefined}
+            onAction={canManage ? handleOpenAssignModal : undefined}
           />
         ) : (
           <>
@@ -176,51 +173,32 @@ export const Assignments = () => {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Ref ID</th>
-                    <th>Asset Details</th>
-                    <th>Assigned To</th>
+                    <th>Asset</th>
+                    <th>Employee</th>
+                    <th>Department</th>
                     <th>Assigned Date</th>
                     <th>Returned Date</th>
                     <th>Status</th>
-                    <th>Issued By</th>
-                    <th>Notes & Remarks</th>
-                    {canManage && <th style={{ textAlign: 'right' }}>Actions</th>}
+                    {canManage && <th style={{ textAlign: 'right' }}>Action</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedAssignments.map((asg) => (
                     <tr key={asg.id}>
                       <td>
-                        <span className="code-badge">ASG-{asg.id}</span>
+                        <span style={{ fontWeight: 600, color: '#111827' }}>{asg.assetName}</span>
+                        <span className="code-badge" style={{ marginLeft: '6px' }}>{asg.assetTag}</span>
                       </td>
                       <td>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{asg.assetName}</div>
-                        <div style={{ display: 'flex', gap: '0.4rem', marginTop: '2px', alignItems: 'center' }}>
-                          <span className="code-badge">{asg.assetTag}</span>
-                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>({asg.assetType})</span>
-                        </div>
-                      </td>
-                      <td>
-                        <Link
-                          to={`/employees/${asg.employeeId}`}
-                          style={{ fontWeight: 600, color: '#2563eb' }}
-                        >
+                        <Link to={`/employees/${asg.employeeId}`}>
                           {asg.employeeName}
                         </Link>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                          {asg.employeeCode} &bull; {asg.departmentName}
-                        </div>
                       </td>
-                      <td style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>{asg.assignedDate}</td>
-                      <td style={{ fontSize: '0.82rem', whiteSpace: 'nowrap' }}>{asg.returnedDate || '—'}</td>
+                      <td>{asg.departmentName}</td>
+                      <td>{asg.assignedDate}</td>
+                      <td>{asg.returnedDate || '—'}</td>
                       <td>
                         <Badge status={asg.status} />
-                      </td>
-                      <td style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                        {asg.assignedByName || 'System'}
-                      </td>
-                      <td style={{ fontSize: '0.82rem', color: '#475569', maxWidth: '240px' }}>
-                        {asg.notes || '—'}
                       </td>
                       {canManage && (
                         <td style={{ textAlign: 'right' }}>
@@ -228,7 +206,6 @@ export const Assignments = () => {
                             <Button
                               variant="secondary"
                               size="sm"
-                              icon={RotateCcw}
                               onClick={() => setReturnTarget(asg)}
                             >
                               Return
@@ -252,7 +229,6 @@ export const Assignments = () => {
         )}
       </div>
 
-      {/* Assign Modal */}
       <AssignAssetModal
         isOpen={isAssignModalOpen}
         onClose={() => setIsAssignModalOpen(false)}
@@ -262,7 +238,6 @@ export const Assignments = () => {
         loading={submitting}
       />
 
-      {/* Return Modal */}
       <ReturnAssetModal
         isOpen={Boolean(returnTarget)}
         onClose={() => setReturnTarget(null)}

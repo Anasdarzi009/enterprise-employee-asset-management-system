@@ -33,7 +33,7 @@ export const AssignAssetModal = ({
 
   const validate = () => {
     const errs = {};
-    if (!formData.assetId) errs.assetId = 'Please select an available asset';
+    if (!formData.assetId) errs.assetId = 'Please select an asset';
     if (!formData.employeeId) errs.employeeId = 'Please select an employee';
     if (!formData.assignedDate) errs.assignedDate = 'Assignment date is required';
 
@@ -57,23 +57,23 @@ export const AssignAssetModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Assign Enterprise Hardware Asset"
-      maxWidth="600px"
+      title="Assign Asset"
+      maxWidth="500px"
     >
       <form onSubmit={handleSubmit}>
         <div className="modal-body">
           <div className="form-group">
-            <label className="form-label">Select Available Asset *</label>
+            <label className="form-label">Available Asset *</label>
             <select
               className="form-select"
               value={formData.assetId}
               onChange={(e) => setFormData({ ...formData, assetId: e.target.value })}
               disabled={Boolean(preselectedAssetId)}
             >
-              <option value="">Choose an available asset...</option>
+              <option value="">Select Asset...</option>
               {availableAssets.map((asset) => (
                 <option key={asset.id} value={asset.id}>
-                  [{asset.assetTag}] {asset.name} ({asset.type})
+                  {asset.name} ({asset.assetTag})
                 </option>
               ))}
             </select>
@@ -81,19 +81,19 @@ export const AssignAssetModal = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">Assign To Employee *</label>
+            <label className="form-label">Employee *</label>
             <select
               className="form-select"
               value={formData.employeeId}
               onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
               disabled={Boolean(preselectedEmployeeId)}
             >
-              <option value="">Choose an employee...</option>
+              <option value="">Select Employee...</option>
               {employees
                 .filter((emp) => emp.status === 'ACTIVE')
                 .map((emp) => (
                   <option key={emp.id} value={emp.id}>
-                    [{emp.employeeId}] {emp.firstName} {emp.lastName} &bull; {emp.departmentName} ({emp.designation})
+                    {emp.firstName} {emp.lastName} ({emp.employeeId}) - {emp.departmentName}
                   </option>
                 ))}
             </select>
@@ -112,11 +112,11 @@ export const AssignAssetModal = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">Assignment Remarks / Notes</label>
+            <label className="form-label">Notes</label>
             <textarea
               className="form-textarea"
-              rows="3"
-              placeholder="e.g. Assigned for remote workstation setup; includes charger and protective case"
+              rows="2"
+              placeholder="Optional notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
@@ -128,7 +128,7 @@ export const AssignAssetModal = ({
             Cancel
           </Button>
           <Button variant="primary" type="submit" loading={loading}>
-            Confirm Assignment
+            Assign
           </Button>
         </div>
       </form>

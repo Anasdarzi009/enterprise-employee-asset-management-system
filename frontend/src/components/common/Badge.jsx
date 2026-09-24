@@ -9,7 +9,6 @@ export const Badge = ({ status, type, label }) => {
         return 'badge-success';
       case 'ASSIGNED':
       case 'ADMIN':
-      case 'LAPTOP':
         return 'badge-info';
       case 'MAINTENANCE':
       case 'ON_LEAVE':
@@ -19,10 +18,6 @@ export const Badge = ({ status, type, label }) => {
       case 'INACTIVE':
       case 'RETURNED':
         return 'badge-danger';
-      case 'MONITOR':
-      case 'TABLET':
-      case 'MOBILE':
-        return 'badge-purple';
       default:
         return 'badge-gray';
     }
@@ -32,7 +27,6 @@ export const Badge = ({ status, type, label }) => {
 
   return (
     <span className={`badge ${getBadgeClass()}`}>
-      <span className="badge-dot"></span>
       {displayText}
     </span>
   );
